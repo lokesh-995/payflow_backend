@@ -96,38 +96,38 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/users/me",
                                 "/api/users/logout",
-                                "/api/employees/add"
+                                "/api/employees/add"  // ✅ Only HR & Manager
                         ).hasAnyRole("MANAGER", "HR")
                         .requestMatchers("/api/employees/login").permitAll()
-                        .requestMatchers(
-                                "/api/employees/me",
-                                "/api/employees/logout",
-                                "/api/employees/reset-password"
-                        ).hasRole("EMPLOYEE")
+                        .requestMatchers("/api/employees/me", "/api/employees/logout", "/api/employees/reset-password").hasRole("EMPLOYEE")
                         .anyRequest().authenticated()
                 )
-                .sessionManagement(session ->
-                        session.maximumSessions(1).maxSessionsPreventsLogin(false)
+                .sessionManagement(session -> session
+                        .maximumSessions(1)
+                        .maxSessionsPreventsLogin(false)
                 )
-                .logout(logout -> {
-                    logout.logoutUrl("/api/admins/logout")
-                            .logoutSuccessHandler((request, response, authentication) -> response.setStatus(200))
-                            .invalidateHttpSession(true)
-                            .deleteCookies("JSESSIONID");
+                .logout(logout -> logout
+                        .logoutUrl("/api/admins/logout")
+                        .logoutSuccessHandler((request, response, authentication) -> response.setStatus(200))
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/api/users/logout")
+                        .logoutSuccessHandler((request, response, authentication) -> response.setStatus(200))
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/api/employees/logout")
+                        .logoutSuccessHandler((request, response, authentication) -> response.setStatus(200))
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                )
 
-                    logout.logoutUrl("/api/users/logout")
-                            .logoutSuccessHandler((request, response, authentication) -> response.setStatus(200))
-                            .invalidateHttpSession(true)
-                            .deleteCookies("JSESSIONID");
 
-                    logout.logoutUrl("/api/employees/logout")
-                            .logoutSuccessHandler((request, response, authentication) -> response.setStatus(200))
-                            .invalidateHttpSession(true)
-                            .deleteCookies("JSESSIONID");
-                })
                 .httpBasic(httpBasic -> httpBasic.disable())
-                .formLogin(form -> form.disable());
-
+                .formLogin(form -> form.disable()); // Keep forms disabled
         return http.build();
     }
 
