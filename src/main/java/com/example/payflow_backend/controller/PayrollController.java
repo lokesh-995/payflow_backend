@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/payroll")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(origins = "https://payflow1.netlify.app/", allowedHeaders = "true")
 public class PayrollController {
 
     @Autowired
