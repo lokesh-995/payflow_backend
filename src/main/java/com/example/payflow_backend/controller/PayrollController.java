@@ -16,7 +16,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/payroll")
-@CrossOrigin(origins = "https://payflow1.netlify.app", allowCredentials = "true")
 public class PayrollController {
 
     @Autowired
