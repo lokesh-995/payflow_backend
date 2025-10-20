@@ -17,7 +17,7 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "https://payflow1.netlify.app/")
-@RequestMapping("/api/ctc")
+@RequestMapping("api/ctc")
 
 public class CTCController {
 
@@ -30,7 +30,7 @@ public class CTCController {
     /**
      * Create a new CTC record for an employee
      */
-    @PostMapping("/employee/{employeeId}")
+    @PostMapping("employee/{employeeId}")
     public ResponseEntity<?> createCTC(@PathVariable Long employeeId, @RequestBody CTC ctc) {
         try {
             CTC createdCTC = ctcService.createCTC(employeeId, ctc);
@@ -44,7 +44,7 @@ public class CTCController {
     /**
      * Update an existing CTC record
      */
-    @PutMapping("/{ctcId}")
+    @PutMapping("{ctcId}")
     public ResponseEntity<?> updateCTC(@PathVariable Long ctcId, @RequestBody CTC ctc) {
         try {
             CTC updatedCTC = ctcService.updateCTC(ctcId, ctc);
@@ -58,7 +58,7 @@ public class CTCController {
     /**
      * Get all CTC records for an employee
      */
-    @GetMapping("/employee/{employeeId}")
+    @GetMapping("employee/{employeeId}")
     public ResponseEntity<List<CTC>> getCTCByEmployeeId(@PathVariable Long employeeId) {
         List<CTC> ctcRecords = ctcService.getCTCByEmployeeId(employeeId);
         return ResponseEntity.ok(ctcRecords);
@@ -67,7 +67,7 @@ public class CTCController {
     /**
      * Get current active CTC for an employee
      */
-    @GetMapping("/employee/{employeeId}/current")
+    @GetMapping("employee/{employeeId}/current")
     public ResponseEntity<?> getCurrentCTCByEmployeeId(@PathVariable Long employeeId) {
         Optional<CTC> currentCTC = ctcService.getCurrentCTCByEmployeeId(employeeId);
         if (currentCTC.isPresent()) {
@@ -81,7 +81,7 @@ public class CTCController {
     /**
      * Get CTC history for an employee
      */
-    @GetMapping("/employee/{employeeId}/history")
+    @GetMapping("employee/{employeeId}/history")
     public ResponseEntity<List<CTCHistory>> getCTCHistoryByEmployeeId(@PathVariable Long employeeId) {
         List<CTCHistory> ctcHistory = ctcHistoryService.getCTCHistoryByEmployeeId(employeeId);
         return ResponseEntity.ok(ctcHistory);
@@ -90,7 +90,7 @@ public class CTCController {
     /**
      * Get the latest CTC record for an employee
      */
-    @GetMapping("/employee/{employeeId}/latest")
+    @GetMapping("employee/{employeeId}/latest")
     public ResponseEntity<?> getLatestCTCByEmployeeId(@PathVariable Long employeeId) {
         Optional<CTC> latestCTC = ctcService.getLatestCTCByEmployeeId(employeeId);
         if (latestCTC.isPresent()) {
@@ -104,7 +104,7 @@ public class CTCController {
     /**
      * Get monthly salary for an employee
      */
-    @GetMapping("/employee/{employeeId}/monthly-salary")
+    @GetMapping("employee/{employeeId}/monthly-salary")
     public ResponseEntity<?> getMonthlySalary(@PathVariable Long employeeId) {
         BigDecimal monthlySalary = ctcService.getMonthlySlaryByEmployeeId(employeeId);
         return ResponseEntity.ok(Map.of(
@@ -116,7 +116,7 @@ public class CTCController {
     /**
      * Get net monthly salary for an employee
      */
-    @GetMapping("/employee/{employeeId}/net-monthly-salary")
+    @GetMapping("employee/{employeeId}/net-monthly-salary")
     public ResponseEntity<?> getNetMonthlySalary(@PathVariable Long employeeId) {
         BigDecimal netMonthlySalary = ctcService.getNetMonthlySalaryByEmployeeId(employeeId);
         return ResponseEntity.ok(Map.of(
@@ -128,7 +128,7 @@ public class CTCController {
     /**
      * Get all CTC records
      */
-    @GetMapping("/all")
+    @GetMapping("all")
     public ResponseEntity<List<CTC>> getAllCTC() {
         List<CTC> ctcRecords = ctcService.getAllCTC();
         return ResponseEntity.ok(ctcRecords);
@@ -137,7 +137,7 @@ public class CTCController {
     /**
      * Create a salary revision
      */
-    @PostMapping("/employee/{employeeId}/revision")
+    @PostMapping("employee/{employeeId}/revision")
     public ResponseEntity<?> createSalaryRevision(
             @PathVariable Long employeeId,
             @RequestBody CTC ctc,
@@ -155,7 +155,7 @@ public class CTCController {
     /**
      * Get CTC records within a salary range
      */
-    @GetMapping("/salary-range")
+    @GetMapping("salary-range")
     public ResponseEntity<List<CTC>> getCTCBySalaryRange(
             @RequestParam BigDecimal minSalary,
             @RequestParam BigDecimal maxSalary) {
@@ -166,7 +166,7 @@ public class CTCController {
     /**
      * Check if employee has CTC
      */
-    @GetMapping("/employee/{employeeId}/has-ctc")
+    @GetMapping("employee/{employeeId}/has-ctc")
     public ResponseEntity<?> hasCTC(@PathVariable Long employeeId) {
         boolean hasCTC = ctcService.hasCTC(employeeId);
         return ResponseEntity.ok(Map.of(
@@ -178,7 +178,7 @@ public class CTCController {
     /**
      * Delete a CTC record (use with caution)
      */
-    @DeleteMapping("/{ctcId}")
+    @DeleteMapping("{ctcId}")
     public ResponseEntity<?> deleteCTC(@PathVariable Long ctcId) {
         try {
             ctcService.deleteCTC(ctcId);

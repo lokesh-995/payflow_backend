@@ -17,7 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 @RestController
 @CrossOrigin(origins = "https://payflow1.netlify.app/")
-@RequestMapping("/api/admins")
+@RequestMapping("api/admins")
 public class AdminController {
 
     private final AuthenticationManager authenticationManager;
@@ -28,7 +28,7 @@ public class AdminController {
         this.authenticationManager = authenticationManager;
     }
 
-    @PostMapping("/register")
+    @PostMapping("register")
     public ResponseEntity<?> register(@RequestBody Map<String, String> request) {
         try {
             String username = request.get("username");
@@ -66,7 +66,7 @@ public class AdminController {
 
     // Login is handled by Spring Security's formLogin configuration
 
-    @GetMapping("/me")
+    @GetMapping("me")
     public ResponseEntity<?> getCurrentAdmin(Principal principal) {
         // Principal contains the logged-in admin’s email
         if (principal == null) {
@@ -82,7 +82,7 @@ public class AdminController {
         return ResponseEntity.ok(admin);
     }
 
-    @PostMapping("/logout")
+    @PostMapping("logout")
     public ResponseEntity<?> logout(HttpServletRequest request) {
         System.out.println("---admin logout called---");
         HttpSession session = request.getSession(false);
@@ -95,7 +95,7 @@ public class AdminController {
 
 
 
-    @PostMapping("/login")
+    @PostMapping("login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> request, HttpServletRequest httpRequest) {
         String email = request.get("email");
         String password = request.get("password");

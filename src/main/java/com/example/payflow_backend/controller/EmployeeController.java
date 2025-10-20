@@ -28,7 +28,7 @@ import java.util.*;
 
 @RestController
 @CrossOrigin(origins = "https://payflow1.netlify.app/")
-@RequestMapping("/api/employees")
+@RequestMapping("api/employees")
 public class EmployeeController {
 
     private final EmployeeService service;
@@ -51,7 +51,7 @@ public class EmployeeController {
 
     // ✅ Modified Add Employee (Handles pastExperiences directly)
     @PreAuthorize("hasAnyRole('HR','MANAGER')")
-    @PostMapping("/add")
+    @PostMapping("add")
     public ResponseEntity<?> addEmployee(@RequestBody Map<String, Object> employeeData, Authentication authentication) {
         try {
             Employee employee = new Employee();
@@ -147,7 +147,7 @@ public class EmployeeController {
         }
     }
 
-    @GetMapping("/getAll")
+    @GetMapping("getAll")
     public ResponseEntity<List<Employee>> getAllEmployees(Authentication authentication) {
         // Check if the user is a manager
         if (authentication != null) {
@@ -166,13 +166,13 @@ public class EmployeeController {
         return ResponseEntity.ok(employees);
     }
 
-    @GetMapping("/managers")
+    @GetMapping("managers")
     public ResponseEntity<List<User>> getAllManagers() {
         List<User> managers = userRepository.findAllActiveManagers();
         return ResponseEntity.ok(managers);
     }
 
-    @GetMapping("/current-user-role")
+    @GetMapping("current-user-role")
     public ResponseEntity<Map<String, String>> getCurrentUserRole(Authentication authentication) {
         if (authentication == null) {
             return ResponseEntity.status(401).body(Map.of("error", "Not authenticated"));
@@ -192,7 +192,7 @@ public class EmployeeController {
         ));
     }
 
-    @PostMapping("/login")
+    @PostMapping("login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> req, HttpServletRequest request) {
         String email = req.get("email");
         String password = req.get("password");
@@ -222,7 +222,7 @@ public class EmployeeController {
         ));
     }
 
-    @PostMapping("/employee/reset-password")
+    @PostMapping("employee/reset-password")
     public ResponseEntity<?> resetEmployeePassword(@RequestBody Map<String, String> req, Principal principal) {
         if (principal == null) {
             return ResponseEntity.status(401).body(Map.of("error", "Not logged in"));
@@ -254,13 +254,13 @@ public class EmployeeController {
         return ResponseEntity.ok(Map.of("message", "Password reset successful"));
     }
 
-    @GetMapping("/logout")
+    @GetMapping("logout")
     public ResponseEntity<String> logout() {
         SecurityContextHolder.clearContext();
         return ResponseEntity.ok("Employee logged out.");
     }
 
-    @GetMapping("/me")
+    @GetMapping("me")
     public ResponseEntity<?> getProfile(Authentication auth) {
         System.out.println("======fetching profile using me ======================");
         if (auth == null) {
@@ -278,7 +278,7 @@ public class EmployeeController {
     }
 
     @PreAuthorize("hasAnyRole('HR','MANAGER','ADMIN')")
-    @GetMapping("/{employeeId}")
+    @GetMapping("{employeeId}")
     public ResponseEntity<?> getEmployeeById(@PathVariable Long employeeId, Authentication authentication) {
         try {
             Employee emp = employeeRepo.findById(employeeId).orElse(null);
@@ -313,7 +313,7 @@ public class EmployeeController {
     // --------------------------
 
     @PreAuthorize("hasAnyRole('HR','MANAGER')")
-    @PostMapping("/{employeeId}/experiences")
+    @PostMapping("{employeeId}/experiences")
     public ResponseEntity<PastExperience> addExperience(@PathVariable Long employeeId,
                                                         @RequestBody PastExperience experience) {
         PastExperience saved = pastExperienceService.saveExperience(experience, employeeId);
@@ -321,7 +321,7 @@ public class EmployeeController {
     }
 
     @PreAuthorize("hasAnyRole('HR','MANAGER')")
-    @PostMapping("/{employeeId}/experiences/bulk")
+    @PostMapping("{employeeId}/experiences/bulk")
     public ResponseEntity<List<PastExperience>> addMultipleExperiences(@PathVariable Long employeeId,
                                                                        @RequestBody List<PastExperience> experiences) {
         List<PastExperience> savedList = pastExperienceService.saveAllExperiences(experiences, employeeId);
@@ -329,14 +329,14 @@ public class EmployeeController {
     }
 
     @PreAuthorize("hasAnyRole('HR','MANAGER','EMPLOYEE')")
-    @GetMapping("/{employeeId}/experiences")
+    @GetMapping("{employeeId}/experiences")
     public ResponseEntity<List<PastExperience>> getExperiencesByEmployee(@PathVariable Long employeeId) {
         List<PastExperience> experiences = pastExperienceService.getExperiencesByEmployeeId(employeeId);
         return ResponseEntity.ok(experiences);
     }
 
     @PreAuthorize("hasAnyRole('HR','MANAGER')")
-    @PutMapping("/{employeeId}/experiences/{experienceId}")
+    @PutMapping("{employeeId}/experiences/{experienceId}")
     public ResponseEntity<PastExperience> updateExperience(@PathVariable Long experienceId,
                                                            @RequestBody PastExperience updatedExperience) {
         PastExperience updated = pastExperienceService.updateExperience(experienceId, updatedExperience);
@@ -344,7 +344,7 @@ public class EmployeeController {
     }
 
     @PreAuthorize("hasAnyRole('HR','MANAGER')")
-    @DeleteMapping("/{employeeId}/experiences/{experienceId}")
+    @DeleteMapping("{employeeId}/experiences/{experienceId}")
     public ResponseEntity<Void> deleteExperience(@PathVariable Long experienceId) {
         pastExperienceService.deleteExperience(experienceId);
         return ResponseEntity.noContent().build();
@@ -361,7 +361,7 @@ public class EmployeeController {
     }
 
     // ✅ Admin endpoint to reset extra leaves for all employees (for testing/monthly reset)
-    @PostMapping("/reset-extra-leaves")
+    @PostMapping("reset-extra-leaves")
     @PreAuthorize("hasRole('HR')")
     public ResponseEntity<Map<String, Object>> resetExtraLeaves() {
         List<Employee> allEmployees = employeeRepo.findAll();
