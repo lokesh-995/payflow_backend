@@ -87,6 +87,7 @@ public class SecurityConfig {
 
                                 "/api/users/login",
                                   // ✅ Now public
+                                "/api/users/register",
                                 "/api/employees/login",
                                 "/api/forgot-password"
                         ).permitAll()
@@ -94,7 +95,7 @@ public class SecurityConfig {
                         // ---------------- Admin Protected ----------------
                         .requestMatchers(
                                 "/api/admins/me",
-                                "/api/users/register",
+
                                 "/api/admins/logout"
                         ).
                         hasAnyRole("ADMIN","HR","MANAGER")
