@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin(origins = "https://payflow1.netlify.app/")
 @RequestMapping("/api/ctc")
 
 public class CTCController {
