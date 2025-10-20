@@ -84,9 +84,9 @@ public class SecurityConfig {
                         // ---------------- Public Endpoints ----------------
                         .requestMatchers(
                                 "/api/admins/login",
-                                "/api/admins/register",
+
                                 "/api/users/login",
-                                "/api/users/register",  // ✅ Now public
+                                  // ✅ Now public
                                 "/api/employees/login",
                                 "/api/forgot-password"
                         ).permitAll()
@@ -94,6 +94,7 @@ public class SecurityConfig {
                         // ---------------- Admin Protected ----------------
                         .requestMatchers(
                                 "/api/admins/me",
+                                "/api/users/register",
                                 "/api/admins/logout"
                         ).hasRole("ADMIN")
 
@@ -101,6 +102,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/users/me",
                                 "/api/users/logout",
+                                "/api/admins/register",
                                 "/api/employees/add"
                         ).hasAnyRole("MANAGER", "HR")
 
