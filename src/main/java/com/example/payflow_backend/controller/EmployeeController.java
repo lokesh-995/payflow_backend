@@ -27,7 +27,7 @@ import java.util.*;
 // ... (keep your package and imports unchanged)
 
 @RestController
-@CrossOrigin(origins = "https://payflow1.netlify.app")
+@CrossOrigin(origins = "https://payflow1.netlify.app",, allowCredentials = "true")
 @RequestMapping("/api/employees")
 public class EmployeeController {
 

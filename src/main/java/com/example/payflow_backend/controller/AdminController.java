@@ -16,7 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 @RestController
-@CrossOrigin(origins = "https://payflow1.netlify.app")
+@CrossOrigin(origins = "https://payflow1.netlify.app", allowCredentials = "true")
 @RequestMapping("/api/admins")
 public class AdminController {
 
