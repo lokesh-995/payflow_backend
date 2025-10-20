@@ -96,7 +96,7 @@ public class SecurityConfig {
                                 "/api/admins/me",
                                 "/api/users/register",
                                 "/api/admins/logout"
-                        ).hasRole("ADMIN")
+                        ).hasAnyRole("ADMIN","HR","MANAGER")
 
                         // ---------------- Manager / HR ----------------
                         .requestMatchers(
@@ -104,7 +104,7 @@ public class SecurityConfig {
                                 "/api/users/logout",
                                 "/api/admins/register",
                                 "/api/employees/add"
-                        ).hasAnyRole("MANAGER", "HR")
+                        ).hasAnyRole("ADMIN","MANAGER", "HR")
 
                         // ---------------- Employee Protected ----------------
                         .requestMatchers(
