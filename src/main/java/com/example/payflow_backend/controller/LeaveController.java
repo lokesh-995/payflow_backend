@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/leaves")
-@CrossOrigin(origins = "https://payflow1.netlify.app/")
+@CrossOrigin(origins = "http://payflow1.netlify.app/")
 public class LeaveController {
 
     private final LeaveRequestService leaveService;

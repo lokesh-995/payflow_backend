@@ -17,7 +17,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/ctc")
-@CrossOrigin(origins = "https://payflow1.netlify.app/", allowCredentials = "true")
+@CrossOrigin(origins = "http://payflow1.netlify.app/", allowCredentials = "true")
 public class CTCController {
 
     @Autowired

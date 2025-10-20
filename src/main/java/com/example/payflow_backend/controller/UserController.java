@@ -20,7 +20,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 
 @RestController
-@CrossOrigin(origins = "https://payflow1.netlify.app/")
+@CrossOrigin(origins = "http://payflow1.netlify.app/")
 @RequestMapping("/api/users")
 public class UserController {
 
