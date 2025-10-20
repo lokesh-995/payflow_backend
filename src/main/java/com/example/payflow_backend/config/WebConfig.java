@@ -13,14 +13,11 @@ public class WebConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**") // apply to all endpoints
-                        .allowedOrigins(
-                                "https://payflow1.netlify.app",  // ✅ your deployed frontend
-                                "http://localhost:5173"          // ✅ for local dev (optional)
-                        )
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowedHeaders("*")
-                        .allowCredentials(true); // needed if you're using sessions/cookies
+                registry.addMapping("/**")
+                        .allowedOriginPatterns("*") // allows all origins
+                        .allowedMethods("*")        // allows all methods
+                        .allowedHeaders("*")        // allows all headers
+                        .allowCredentials(true);    // allows cookies/auth if needed
             }
         };
     }
