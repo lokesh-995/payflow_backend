@@ -4,7 +4,6 @@ import com.example.payflow_backend.model.Admin;
 import com.example.payflow_backend.service.AdminService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,13 +16,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 @RestController
-
+@CrossOrigin(origins = "https://payflow1.netlify.app/")
 @RequestMapping("/api/admins")
 public class AdminController {
 
     private final AuthenticationManager authenticationManager;
     private final AdminService adminService;
-   @Autowired
+
     public AdminController(AdminService adminService, AuthenticationManager authenticationManager) {
         this.adminService = adminService;
         this.authenticationManager = authenticationManager;
@@ -85,7 +84,7 @@ public class AdminController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request) {
-    	System.out.println("---admin logout called---");
+        System.out.println("---admin logout called---");
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate(); // Destroy session
@@ -116,7 +115,7 @@ public class AdminController {
             Admin admin = adminService.findByEmail(email).get();
 
             return ResponseEntity.ok(Map.of(
-            		"role", "admin",
+                    "role", "admin",
                     "message", "Login successful",
                     "adminId", admin.getAdminId(),
                     "sessionId", session.getId()

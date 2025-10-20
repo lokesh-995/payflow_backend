@@ -9,12 +9,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 public class SecurityConfig {
@@ -23,20 +21,7 @@ public class SecurityConfig {
     private final CustomAdminDetailsService adminDetailsService;
     @Autowired
     private CustomUserDetailsService userDetailsService;
-    @Autowired
-    private CustomEmployeeDetailsService employeeDetailsService;
 
-    public SecurityConfig(CustomAdminDetailsService adminDetailsService) {
-        this.adminDetailsService = adminDetailsService;
-    }
-
-    // ---------------- Password Encoder ----------------
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    // ---------------- Authentication Providers ----------------
     @Bean
     public DaoAuthenticationProvider adminAuthProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -53,6 +38,9 @@ public class SecurityConfig {
         return provider;
     }
 
+    @Autowired
+    private CustomEmployeeDetailsService employeeDetailsService;
+
     @Bean
     public DaoAuthenticationProvider employeeAuthProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -61,97 +49,82 @@ public class SecurityConfig {
         return provider;
     }
 
-    // ---------------- Global CORS Filter ----------------
-    @Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.addAllowedOrigin("https://payflow1.netlify.app"); // Your frontend
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
+
+
+    public SecurityConfig(CustomAdminDetailsService adminDetailsService) {
+        this.adminDetailsService = adminDetailsService;
     }
 
-    // ---------------- Security Filter Chain ----------------
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> {}) // Enable CORS using the CorsFilter bean
-                .csrf(csrf -> csrf.disable()) // Disable CSRF
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // ---------------- Public Endpoints ----------------
                         .requestMatchers(
                                 "/api/admins/login",
-
+                                "/api/admins/register",
                                 "/api/users/login",
-                                  // ✅ Now public
-                                "/api/users/register",
                                 "/api/employees/login",
                                 "/api/forgot-password"
                         ).permitAll()
-
-                        // ---------------- Admin Protected ----------------
                         .requestMatchers(
+                                "/api/users/register",
                                 "/api/admins/me",
-
                                 "/api/admins/logout"
-                        ).
-                        hasAnyRole("ADMIN","HR","MANAGER")
-
-                        // ---------------- Manager / HR ----------------
+                        ).hasRole("ADMIN")
                         .requestMatchers(
                                 "/api/users/me",
                                 "/api/users/logout",
-                                "/api/admins/register",
-                                "/api/employees/add"
-                        ).
-                       hasAnyRole("ADMIN","MANAGER", "HR")
-
-                        // ---------------- Employee Protected ----------------
-                        .requestMatchers(
-                                "/api/employees/me",
-                                "/api/employees/logout",
-                                "/api/employees/reset-password"
-                        ).
-                        hasRole("EMPLOYEE")
-
-                        // ---------------- Any other requests ----------------
+                                "/api/employees/add"  // ✅ Only HR & Manager
+                        ).hasAnyRole("MANAGER", "HR")
+                        .requestMatchers("/api/employees/login").permitAll()
+                        .requestMatchers("/api/employees/me", "/api/employees/logout", "/api/employees/reset-password").hasRole("EMPLOYEE")
                         .anyRequest().authenticated()
                 )
-                .sessionManagement(session ->
-                        session.maximumSessions(1).maxSessionsPreventsLogin(false)
+                .sessionManagement(session -> session
+                        .maximumSessions(1)
+                        .maxSessionsPreventsLogin(false)
                 )
-                .logout(logout -> {
-                    logout.logoutUrl("/api/admins/logout")
-                            .logoutSuccessHandler((request, response, authentication) -> response.setStatus(200))
-                            .invalidateHttpSession(true)
-                            .deleteCookies("JSESSIONID");
+                .logout(logout -> logout
+                        .logoutUrl("/api/admins/logout")
+                        .logoutSuccessHandler((request, response, authentication) -> response.setStatus(200))
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/api/users/logout")
+                        .logoutSuccessHandler((request, response, authentication) -> response.setStatus(200))
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/api/employees/logout")
+                        .logoutSuccessHandler((request, response, authentication) -> response.setStatus(200))
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                )
 
-                    logout.logoutUrl("/api/users/logout")
-                            .logoutSuccessHandler((request, response, authentication) -> response.setStatus(200))
-                            .invalidateHttpSession(true)
-                            .deleteCookies("JSESSIONID");
 
-                    logout.logoutUrl("/api/employees/logout")
-                            .logoutSuccessHandler((request, response, authentication) -> response.setStatus(200))
-                            .invalidateHttpSession(true)
-                            .deleteCookies("JSESSIONID");
-                })
                 .httpBasic(httpBasic -> httpBasic.disable())
-                .formLogin(form -> form.disable());
+                .formLogin(form -> form.disable()); // Keep forms disabled
 
         return http.build();
     }
 
-    // ---------------- Authentication Manager ----------------
+
+
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
         builder.authenticationProvider(adminAuthProvider());
         builder.authenticationProvider(userAuthProvider());
-        builder.authenticationProvider(employeeAuthProvider());
+        builder.authenticationProvider(employeeAuthProvider()); // ✅ Add this
         return builder.build();
     }
+
 }
