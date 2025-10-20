@@ -16,6 +16,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/payroll")
+@CrossOrigin
 public class PayrollController {
 
     @Autowired
