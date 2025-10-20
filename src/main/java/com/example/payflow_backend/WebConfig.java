@@ -1,4 +1,4 @@
-package com.example.payflow_backend.config;
+package com.example.payflow_backend;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
