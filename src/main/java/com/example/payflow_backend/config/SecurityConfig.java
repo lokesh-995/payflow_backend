@@ -81,53 +81,61 @@ public class SecurityConfig {
                 .cors(cors -> {}) // Enable CORS using the CorsFilter bean
                 .csrf(csrf -> csrf.disable()) // Disable CSRF
                 .authorizeHttpRequests(auth -> auth
+                        // ---------------- Public Endpoints ----------------
                         .requestMatchers(
                                 "/api/admins/login",
                                 "/api/admins/register",
                                 "/api/users/login",
+                                "/api/users/register",  // ✅ Now public
                                 "/api/employees/login",
                                 "/api/forgot-password"
                         ).permitAll()
+
+                        // ---------------- Admin Protected ----------------
                         .requestMatchers(
-                                "/api/users/register",
                                 "/api/admins/me",
                                 "/api/admins/logout"
                         ).hasRole("ADMIN")
+
+                        // ---------------- Manager / HR ----------------
                         .requestMatchers(
                                 "/api/users/me",
                                 "/api/users/logout",
-                                "/api/employees/add"  // ✅ Only HR & Manager
+                                "/api/employees/add"
                         ).hasAnyRole("MANAGER", "HR")
-                        .requestMatchers("/api/employees/login").permitAll()
-                        .requestMatchers("/api/employees/me", "/api/employees/logout", "/api/employees/reset-password").hasRole("EMPLOYEE")
+
+                        // ---------------- Employee Protected ----------------
+                        .requestMatchers(
+                                "/api/employees/me",
+                                "/api/employees/logout",
+                                "/api/employees/reset-password"
+                        ).hasRole("EMPLOYEE")
+
+                        // ---------------- Any other requests ----------------
                         .anyRequest().authenticated()
                 )
-                .sessionManagement(session -> session
-                        .maximumSessions(1)
-                        .maxSessionsPreventsLogin(false)
+                .sessionManagement(session ->
+                        session.maximumSessions(1).maxSessionsPreventsLogin(false)
                 )
-                .logout(logout -> logout
-                        .logoutUrl("/api/admins/logout")
-                        .logoutSuccessHandler((request, response, authentication) -> response.setStatus(200))
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
-                )
-                .logout(logout -> logout
-                        .logoutUrl("/api/users/logout")
-                        .logoutSuccessHandler((request, response, authentication) -> response.setStatus(200))
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
-                )
-                .logout(logout -> logout
-                        .logoutUrl("/api/employees/logout")
-                        .logoutSuccessHandler((request, response, authentication) -> response.setStatus(200))
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
-                )
+                .logout(logout -> {
+                    logout.logoutUrl("/api/admins/logout")
+                            .logoutSuccessHandler((request, response, authentication) -> response.setStatus(200))
+                            .invalidateHttpSession(true)
+                            .deleteCookies("JSESSIONID");
 
+                    logout.logoutUrl("/api/users/logout")
+                            .logoutSuccessHandler((request, response, authentication) -> response.setStatus(200))
+                            .invalidateHttpSession(true)
+                            .deleteCookies("JSESSIONID");
 
+                    logout.logoutUrl("/api/employees/logout")
+                            .logoutSuccessHandler((request, response, authentication) -> response.setStatus(200))
+                            .invalidateHttpSession(true)
+                            .deleteCookies("JSESSIONID");
+                })
                 .httpBasic(httpBasic -> httpBasic.disable())
-                .formLogin(form -> form.disable()); // Keep forms disabled
+                .formLogin(form -> form.disable());
+
         return http.build();
     }
 
