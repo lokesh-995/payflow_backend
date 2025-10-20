@@ -17,7 +17,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/ctc")
-@CrossOrigin
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class CTCController {
 
     @Autowired

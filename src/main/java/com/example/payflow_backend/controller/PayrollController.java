@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/payroll")
-@CrossOrigin
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class PayrollController {
 
     @Autowired

@@ -27,7 +27,7 @@ import java.util.*;
 // ... (keep your package and imports unchanged)
 
 @RestController
-
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/api/employees")
 public class EmployeeController {
 
